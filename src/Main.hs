@@ -26,6 +26,7 @@ main = do
       case code of
         CurlOK -> do
           let doc = readString [withParseHTML yes, withWarnings no] html
+
           title <- runX $ doc >>> css "title" //> getText
           content <- runX $ doc >>> css "body" //> getText
 
@@ -33,8 +34,8 @@ main = do
           let _content =  intercalate "" content
 
           conn <- connectSqlite3 "pocket.db"
-          i <- prepare conn "INSERT INTO pocket (title, content) VALUES (?, ?)"
-          execute i [toSql _title, toSql _content]
+          i <- prepare conn "INSERT INTO " ++ table ++ " (link, title, content) VALUES (?, ?, ?)"
+          execute i [SqlString url, SqlString _title, SqlString _content]
           commit conn
           disconnect conn
 
@@ -42,7 +43,7 @@ main = do
 
     query s = do
       conn <- connectSqlite3 "pocket.db"
-      q <- prepare conn "SELECT * FROM pocket WHERE pocket MATCH ?"
+      q <- prepare conn "SELECT * FROM " ++ table ++ " WHERE " ++ table ++ " MATCH ?"
       execute q [SqlString s]
       r <- fetchAllRows q
       print r
@@ -50,3 +51,5 @@ main = do
 
     trim = f. f
     f = reverse . dropWhile isSpace
+
+    table = "links"
