@@ -1,4 +1,4 @@
-My personal Firefox's pocket in Haskell.
+My personal Firefox's pocket (bookmark management) in Haskell.
 
 i:link --> hpocket -> link
         |
