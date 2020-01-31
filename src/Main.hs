@@ -54,4 +54,4 @@ main = do
     trim = f. f
     f = reverse . dropWhile isSpace
 
-    dbPath = "/home/hiepph/db/pocket.db"
+    dbPath = "/home/hiepph/pocket.db"

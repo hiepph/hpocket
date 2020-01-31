@@ -19,7 +19,8 @@ executable hpocket
   main-is:             Main.hs
   -- other-modules:
   -- other-extensions:
-  build-depends:       base >=4.9 && <4.10
+  -- depends: libcurl4 libcurl4-openssl-dev
+  build-depends:       base
                      , hxt
                      , HTTP
                      , HandsomeSoup
