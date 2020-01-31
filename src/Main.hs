@@ -33,7 +33,7 @@ main = do
           let _title = head title
           let _content =  intercalate "" content
 
-          conn <- connectSqlite3 "pocket.db"
+          conn <- connectSqlite3 dbPath
           i <- prepare conn $ "INSERT INTO " ++ table ++ " (link, title, content) VALUES (?, ?, ?)"
           execute i [SqlString url, SqlString _title, SqlString _content]
           commit conn
@@ -43,7 +43,7 @@ main = do
         _ -> error $ show code
 
     query s = do
-      conn <- connectSqlite3 "pocket.db"
+      conn <- connectSqlite3 dbPath
       q <- prepare conn $ "SELECT * FROM " ++ table ++ " WHERE " ++ table ++ " MATCH ?"
       execute q [SqlString s]
       r <- fetchAllRows q
@@ -53,3 +53,5 @@ main = do
 
     trim = f. f
     f = reverse . dropWhile isSpace
+
+    dbPath = "/home/hiepph/db/pocket.db"
