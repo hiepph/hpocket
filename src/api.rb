@@ -1,5 +1,6 @@
 require 'sinatra'
 
 get '/q/:query' do
-  params['query']
+  q = "q:#{params['query']}"
+  `hpocket #{q}`
 end
