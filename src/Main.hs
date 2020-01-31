@@ -20,6 +20,7 @@ main = do
     "q:" -> query $ val act
     _ -> error "No action"
   where
+    table = "links"
     val = trim . drop 2
     insert url = do
       (code, html) <- curlGetString url []
@@ -34,22 +35,22 @@ main = do
           let _content =  intercalate "" content
 
           conn <- connectSqlite3 "pocket.db"
-          i <- prepare conn "INSERT INTO " ++ table ++ " (link, title, content) VALUES (?, ?, ?)"
+          i <- prepare conn $ "INSERT INTO " ++ table ++ " (link, title, content) VALUES (?, ?, ?)"
           execute i [SqlString url, SqlString _title, SqlString _content]
           commit conn
           disconnect conn
+          putStrLn url
 
         _ -> error $ show code
 
     query s = do
       conn <- connectSqlite3 "pocket.db"
-      q <- prepare conn "SELECT * FROM " ++ table ++ " WHERE " ++ table ++ " MATCH ?"
+      q <- prepare conn $ "SELECT * FROM " ++ table ++ " WHERE " ++ table ++ " MATCH ?"
       execute q [SqlString s]
       r <- fetchAllRows q
-      print r
+      let links = map (\l -> fromSql l :: String) $ map head r
+      putStrLn $ intercalate "\n" links
       disconnect conn
 
     trim = f. f
     f = reverse . dropWhile isSpace
-
-    table = "links"
