@@ -12,9 +12,8 @@ import System.Environment
 
 
 main = do
-  -- i:https://google.com
-  -- q:haskell
-  act <- getLine
+  args <- getArgs
+  let act = args !! 0
   case take 2 act of
     "i:" -> insert $ val act
     "q:" -> query $ val act
