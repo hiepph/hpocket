@@ -1,8 +1,10 @@
 module Web exposing (..)
 
 import Browser
-import Html exposing (Html, text, pre)
 import Http
+import Html exposing (..)
+import Html.Attributes exposing (..)
+import Html.Events exposing (onInput)
 
 
 
@@ -20,6 +22,7 @@ main =
 
 -- MODEL
 
+
 type Model
   = Failure
   | Loading
@@ -27,24 +30,22 @@ type Model
 
 
 init : () -> (Model, Cmd Msg)
-init _ =
-  ( Loading
-  , Http.get
-    { url = "http://localhost:4567/q/city"
-    , expect = Http.expectString GotText
-    }
-  )
+init _ = (Success "", Cmd.none)
 
 
 -- UPDATE
 
 type Msg
   = GotText (Result Http.Error String)
+  | Change String
 
 
 update : Msg -> Model -> (Model, Cmd Msg)
 update msg model =
   case msg of
+    Change newQuery ->
+      (Loading, query newQuery)
+
     GotText result ->
       case result of
         Ok fullText ->
@@ -52,6 +53,8 @@ update msg model =
 
         Err _ ->
           (Failure, Cmd.none)
+
+
 
 -- SUBSCRIPTIONS
 
@@ -64,6 +67,13 @@ subscriptions model =
 
 view : Model -> Html Msg
 view model =
+  div []
+  [ input [ placeholder "Query", onInput Change ] []
+  , viewResult model
+  ]
+
+viewResult : Model -> Html Msg
+viewResult model =
   case model of
     Failure ->
       text "Unable to load."
@@ -72,4 +82,14 @@ view model =
       text "Loading..."
 
     Success fullText ->
-      pre [] [ text fullText ]
+      text fullText
+
+
+-- HTTP
+
+query : String -> Cmd Msg
+query q =
+  Http.get
+    { url = "http://localhost:4567/q/" ++ q
+    , expect = Http.expectString GotText
+    }
