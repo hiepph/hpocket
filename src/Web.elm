@@ -69,7 +69,8 @@ view : Model -> Html Msg
 view model =
   div []
   [ input [ placeholder "Query", onInput Change ] []
-  , viewResult model
+  , div []
+    [ viewResult model ]
   ]
 
 viewResult : Model -> Html Msg
@@ -82,7 +83,7 @@ viewResult model =
       text "Loading..."
 
     Success fullText ->
-      text fullText
+       text fullText
 
 
 -- HTTP
